@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="OmniRouter AI - A modern, high-performance general purpose AI chatbot studio powered by OpenRouter. Access hundreds of AI models including Claude, GPT-4o, DeepSeek R1, and Gemini.">
+  <meta name="keywords" content="AI chatbot, OpenRouter, DeepSeek R1, Claude 3.7, GPT-4o, Gemini, LLM client">
+  <title>OmniRouter AI - Next-Gen General Purpose AI Chatbot</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Markdown & Code Highlighting Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <!-- Lucide Icons (Vanilla SVG helper) -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app" class="app-layout">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar" aria-label="Sidebar Navigation">
+      <div class="sidebar-header">
+        <div class="brand">
+          <div class="brand-logo">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/>
+              <path d="M12 6v6l4 2"/>
+              <circle cx="12" cy="12" r="3" fill="currentColor"/>
+            </svg>
+          </div>
+          <div class="brand-info">
+            <h1 class="brand-title">OmniRouter</h1>
+            <span class="brand-badge">AI Studio</span>
+          </div>
+        </div>
+        <button id="sidebar-close-btn" class="icon-btn mobile-only" aria-label="Close sidebar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="sidebar-actions">
+        <button id="new-chat-btn" class="btn btn-primary btn-new-chat">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          <span>New Conversation</span>
+        </button>
+      </div>
+
+      <div class="search-box">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="search-chats-input" placeholder="Search conversations..." aria-label="Search conversations">
+      </div>
+
+      <div class="chats-history-container">
+        <div class="history-label">Recent Chats</div>
+        <ul id="chats-list" class="chats-list" role="list">
+          <!-- Dynamically populated chats -->
+        </ul>
+      </div>
+
+      <!-- Bottom User / OpenRouter Key Bar -->
+      <div class="sidebar-footer">
+        <div id="api-key-status-pill" class="api-key-pill" role="button" tabindex="0" title="Click to configure OpenRouter API Key">
+          <div class="status-indicator-dot" id="api-status-dot"></div>
+          <div class="api-status-text">
+            <span class="api-label" id="api-key-label">API Key</span>
+            <span class="api-subtext" id="api-key-subtext">Click to set key</span>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Sidebar Backdrop for Mobile -->
+    <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+
+    <!-- Main Content Area -->
+    <main class="chat-main" id="chat-main">
+      <!-- Top Navigation Bar -->
+      <header class="chat-header">
+        <div class="header-left">
+          <button id="sidebar-toggle-btn" class="icon-btn" aria-label="Toggle Sidebar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+
+          <!-- Model Switcher Trigger Pill -->
+          <button id="open-model-modal-btn" class="model-selector-pill" title="Browse and switch OpenRouter models">
+            <div class="model-pill-icon" id="header-model-icon">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+            <div class="model-pill-details">
+              <span class="model-name" id="current-model-display">DeepSeek R1</span>
+              <span class="model-tag-badge" id="current-model-tag">Reasoning</span>
+            </div>
+            <svg class="chevron-down" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+
+        <div class="header-right">
+          <button id="system-prompt-btn" class="icon-btn" title="Custom System Instructions / Persona">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </button>
+
+          <button id="export-chat-btn" class="icon-btn" title="Export conversation (Markdown or JSON)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+
+          <button id="clear-chat-btn" class="icon-btn" title="Clear messages in current chat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+          </button>
+
+          <button id="open-settings-btn" class="icon-btn" title="Settings & API Key">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Messages Viewport -->
+      <div id="messages-container" class="messages-container" role="log" aria-live="polite">
+        <!-- Welcome Screen (shown when conversation has no messages) -->
+        <div id="welcome-screen" class="welcome-screen">
+          <div class="welcome-badge">
+            <span class="sparkle">✨</span> OmniRouter Intelligence Hub
+          </div>
+          <h2 class="welcome-title">What would you like to explore today?</h2>
+          <p class="welcome-subtitle">
+            Powered by OpenRouter. Access state-of-the-art models for code, reasoning, creative writing, research, and general queries.
+          </p>
+
+          <div id="api-key-banner" class="api-key-alert-banner">
+            <div class="banner-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div class="banner-text">
+              <strong>OpenRouter API Key Required:</strong> Add your key to start chatting with any model.
+            </div>
+            <button id="banner-add-key-btn" class="btn btn-sm btn-accent">Configure Key</button>
+          </div>
+
+          <div class="prompt-suggestions-grid">
+            <button class="prompt-card" data-prompt="Explain the difference between quantum computing and classical computing in simple terms with an analogy.">
+              <div class="card-icon">🧠</div>
+              <div class="card-content">
+                <div class="card-title">Quantum vs Classical</div>
+                <div class="card-desc">Explain quantum computing with simple analogies</div>
+              </div>
+            </button>
+
+            <button class="prompt-card" data-prompt="Write a Python script that parses an RSS feed, extracts articles, and saves them to a clean JSON file with error handling.">
+              <div class="card-icon">⚡</div>
+              <div class="card-content">
+                <div class="card-title">Python Automation</div>
+                <div class="card-desc">Write an RSS feed scraper with robust error handling</div>
+              </div>
+            </button>
+
+            <button class="prompt-card" data-prompt="Review this idea: A local-first markdown note-taking app with biometric encryption. What are the key architectural challenges and security best practices?">
+              <div class="card-icon">🛡️</div>
+              <div class="card-content">
+                <div class="card-title">Architecture Review</div>
+                <div class="card-desc">Analyze challenges for local-first encrypted notes</div>
+              </div>
+            </button>
+
+            <button class="prompt-card" data-prompt="Draft a polite and persuasive proposal email to a client explaining why refactoring their legacy system will save 40% maintenance costs.">
+              <div class="card-icon">✍️</div>
+              <div class="card-content">
+                <div class="card-title">Executive Proposal</div>
+                <div class="card-desc">Draft a persuasive client proposal for tech refactoring</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dynamic Message List -->
+        <div id="messages-list" class="messages-list"></div>
+
+        <!-- Scroll down anchor -->
+        <div id="scroll-anchor"></div>
+      </div>
+
+      <!-- Chat Input Area -->
+      <footer class="chat-input-area">
+        <div class="input-container-outer">
+          <!-- Parameter Quick Bar -->
+          <div class="parameter-quickbar">
+            <div class="param-item">
+              <span class="param-label">Model:</span>
+              <button id="quickbar-model-pill" class="param-pill" title="Click to change model">
+                <span id="quickbar-model-name">DeepSeek R1</span>
+                <span class="badge-free" id="quickbar-free-badge">FREE</span>
+              </button>
+            </div>
+            <div class="param-item">
+              <span class="param-label">Temp:</span>
+              <span class="param-val" id="quickbar-temp-val">0.7</span>
+            </div>
+            <div class="param-item">
+              <span class="param-label">Reasoning:</span>
+              <span class="param-val" id="quickbar-reasoning-val">Active</span>
+            </div>
+          </div>
+
+          <div class="input-box">
+            <textarea
+              id="user-input"
+              class="chat-textarea"
+              placeholder="Message OmniRouter... (Shift+Enter for newline, Enter to send)"
+              rows="1"
+              aria-label="Chat input message"
+            ></textarea>
+
+            <div class="input-actions">
+              <!-- Stop Streaming Button -->
+              <button id="stop-generation-btn" class="btn-stop hidden" title="Stop generating response">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+                <span>Stop</span>
+              </button>
+
+              <!-- Send Button -->
+              <button id="send-btn" class="btn-send" title="Send message (Enter)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13"/>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="input-disclaimer">
+            <span>OmniRouter AI connects directly to OpenRouter API. Verify critical information.</span>
+          </div>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- 1. OpenRouter Live Model Browser Modal -->
+  <div id="model-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="model-modal-title">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-icon-badge">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <div>
+            <h3 id="model-modal-title" class="modal-title">OpenRouter Model Explorer</h3>
+            <p class="modal-subtitle">Browse & switch between 300+ models or use curated free/flagship tiers</p>
+          </div>
+        </div>
+        <button id="close-model-modal-btn" class="icon-btn modal-close" aria-label="Close modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="model-modal-controls">
+        <div class="search-box modal-search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="model-search-input" placeholder="Search by name, provider (deepseek, claude, gpt, gemini), or :free..." aria-label="Search models">
+        </div>
+
+        <div class="model-filter-tabs" role="tablist">
+          <button class="filter-tab active" data-filter="all">All Models</button>
+          <button class="filter-tab" data-filter="custom">⭐ My Custom Models</button>
+          <button class="filter-tab" data-filter="free">🌟 Free Models</button>
+          <button class="filter-tab" data-filter="reasoning">🧠 Reasoning / Think</button>
+          <button class="filter-tab" data-filter="flagship">🚀 Flagship</button>
+          <button class="filter-tab" data-filter="fast">⚡ Fast & Efficient</button>
+        </div>
+
+        <div class="model-sync-bar">
+          <span id="model-count-text">Loading model catalog...</span>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <button id="open-custom-model-btn" class="btn btn-sm btn-primary" title="Add your own custom OpenRouter model">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              <span>+ Add Custom Model</span>
+            </button>
+            <button id="sync-models-btn" class="btn btn-sm btn-ghost" title="Fetch latest models from OpenRouter API">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              <span>Refresh Catalog</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="models-grid-container" id="models-grid" role="list">
+        <!-- Model Cards populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Settings & API Key Modal -->
+  <div id="settings-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-icon-badge">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </div>
+          <div>
+            <h3 id="settings-modal-title" class="modal-title">Settings & API Credentials</h3>
+            <p class="modal-subtitle">Configure your OpenRouter API key and model parameters</p>
+          </div>
+        </div>
+        <button id="close-settings-modal-btn" class="icon-btn modal-close" aria-label="Close modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- API Key Section -->
+        <div class="form-group">
+          <label for="api-key-input" class="form-label">
+            <span>OpenRouter API Key</span>
+            <a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer" class="link-external">
+              Get key from openrouter.ai ↗
+            </a>
+          </label>
+          <div class="input-with-action">
+            <input
+              type="password"
+              id="api-key-input"
+              class="form-input font-mono"
+              placeholder="sk-or-v1-..."
+              autocomplete="off"
+            >
+            <button id="toggle-key-visibility-btn" class="input-action-btn" title="Toggle visibility">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+            <button id="verify-key-btn" class="btn btn-sm btn-secondary">Verify Key</button>
+          </div>
+          <div id="key-verification-status" class="status-msg"></div>
+          <p class="form-hint">Your API key is securely saved only in your local browser storage (`localStorage`) and sent solely to OpenRouter's official endpoints.</p>
+        </div>
+
+        <!-- Parameters Section -->
+        <div class="settings-divider">Generation Parameters</div>
+
+        <div class="form-group">
+          <div class="slider-header">
+            <label for="temperature-slider" class="form-label">Temperature: <strong id="temp-display">0.7</strong></label>
+            <span class="param-hint">Lower = deterministic, Higher = creative</span>
+          </div>
+          <input type="range" id="temperature-slider" min="0" max="2" step="0.05" value="0.7" class="form-range">
+        </div>
+
+        <div class="form-group">
+          <div class="slider-header">
+            <label for="max-tokens-input" class="form-label">Max Output Tokens</label>
+            <span class="param-hint">Leave blank for model default</span>
+          </div>
+          <input type="number" id="max-tokens-input" class="form-input" placeholder="e.g. 4096" min="128" max="128000">
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="clear-key-btn" class="btn btn-danger-ghost">Remove Key</button>
+        <button id="save-settings-btn" class="btn btn-primary">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. System Instructions / Persona Modal -->
+  <div id="system-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="system-modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-icon-badge">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div>
+            <h3 id="system-modal-title" class="modal-title">System Instructions</h3>
+            <p class="modal-subtitle">Guide the behavior, role, or tone of the AI assistant</p>
+          </div>
+        </div>
+        <button id="close-system-modal-btn" class="icon-btn modal-close" aria-label="Close modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="preset-chips">
+          <button class="preset-chip" data-preset="default">Default Assistant</button>
+          <button class="preset-chip" data-preset="architect">Software Architect</button>
+          <button class="preset-chip" data-preset="concise">Concise & Direct</button>
+          <button class="preset-chip" data-preset="writer">Creative Writer</button>
+          <button class="preset-chip" data-preset="researcher">Academic Researcher</button>
+        </div>
+
+        <div class="form-group">
+          <label for="system-prompt-textarea" class="form-label">System Prompt</label>
+          <textarea
+            id="system-prompt-textarea"
+            class="form-textarea"
+            rows="6"
+            placeholder="You are a helpful, expert AI assistant..."
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="reset-system-btn" class="btn btn-ghost">Reset to Default</button>
+        <button id="save-system-btn" class="btn btn-primary">Apply Prompt</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Add Custom AI Model Modal -->
+  <div id="custom-model-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="custom-model-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-icon-badge">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          </div>
+          <div>
+            <h3 id="custom-model-title" class="modal-title">Add Custom AI Model</h3>
+            <p class="modal-subtitle">Add any OpenRouter model slug, fine-tune, or custom endpoint</p>
+          </div>
+        </div>
+        <button id="close-custom-model-modal-btn" class="icon-btn modal-close" aria-label="Close modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="custom-model-id-input" class="form-label">
+            <span>Model ID / Slug <span style="color: var(--accent-rose)">*</span></span>
+          </label>
+          <input
+            type="text"
+            id="custom-model-id-input"
+            class="form-input font-mono"
+            placeholder="e.g. meta-llama/llama-3.1-405b-instruct or custom-model:free"
+            required
+          >
+          <p class="form-hint">Must match the exact model string required by OpenRouter.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="custom-model-name-input" class="form-label">
+            <span>Display Name <span style="color: var(--accent-rose)">*</span></span>
+          </label>
+          <input
+            type="text"
+            id="custom-model-name-input"
+            class="form-input"
+            placeholder="e.g. Llama 3.1 405B Instruct"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="custom-model-provider-input" class="form-label">Provider Name</label>
+          <input
+            type="text"
+            id="custom-model-provider-input"
+            class="form-input"
+            placeholder="e.g. Meta, Self-Hosted, or Custom"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="custom-model-context-input" class="form-label">Context Window Length</label>
+          <input
+            type="text"
+            id="custom-model-context-input"
+            class="form-input"
+            placeholder="e.g. 128k, 32k, 1M"
+          >
+        </div>
+
+        <div class="settings-divider">Model Traits & Capabilities</div>
+
+        <div class="checkbox-group" style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.25rem;">
+          <label style="display: flex; align-items: center; gap: 0.65rem; font-size: 0.85rem; cursor: pointer;">
+            <input type="checkbox" id="custom-model-is-reasoning" style="accent-color: var(--primary); width: 16px; height: 16px;">
+            <span>Reasoning Model (generates thought process / &lt;think&gt; tokens)</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.65rem; font-size: 0.85rem; cursor: pointer;">
+            <input type="checkbox" id="custom-model-is-free" style="accent-color: var(--accent-emerald); width: 16px; height: 16px;">
+            <span>Free Tier Model (:free suffix)</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="cancel-custom-model-btn" class="btn btn-ghost">Cancel</button>
+        <button id="save-custom-model-btn" class="btn btn-primary">Save & Select Model</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="assertive"></div>
+
+  <!-- Main JavaScript Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
